@@ -77,15 +77,6 @@ local get_plantname = {}		-- plants index by nodenames (tomato1, tomato2, seeds_
 local get_plantbynumber = {}		-- plants index by number (for random select)
 local get_wildplants = {}		-- wildplant nodenames (pop control)
 
-local function is_specialharvest(plantname)
-	local result = 'hydro:'..plantname
-	local tmp = PLANTS[plantname].give_on_harvest
-	if tmp then
-		result = tmp
-	end
-	return result
-end
-
 for _,plant in pairs(PLANTS) do 
 		--		define nodes
 	local wild_plant = "hydro:wild_"..plant.name
@@ -166,14 +157,6 @@ for _,plant in pairs(PLANTS) do
 		drop = '',
 	})
 
-	local after_dig_node
-	if plant.growtype == 'permaculture' then
-		plant.growtype = 'growshort'
-		after_dig_node = function(pos,node)
-			minetest.add_node(pos, {name='hydro:'..plant.name..'1'})
-		end
-
-	end
 	minetest.register_node('hydro:'..plant.name..'2', {
 		description = 'Tomato Plant (Youngish)',
 		drawtype = 'plantlike',
@@ -209,6 +192,15 @@ for _,plant in pairs(PLANTS) do
 		harvest = plant.give_on_harvest
 	end
 	
+	local after_dig_node
+	if plant.growtype == 'permaculture' then
+		plant.growtype = 'growshort'
+		after_dig_node = function(pos)
+			minetest.add_node(pos, {name='hydro:'..plant.name..'1'})
+		end
+
+	end
+
 	minetest.register_node('hydro:'..plant.name..'4', {
 		description = 'Tomato Plant (Ripe)',
 		drawtype = 'plantlike',
