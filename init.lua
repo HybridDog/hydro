@@ -56,7 +56,38 @@ minetest.register_node("hydro:growlamp", {
 	light_source = 15,
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
 	sounds = default.node_sound_glass_defaults(),
+	node_placement_prediction = "hydro:coffeecup",
 })
+
+minetest.on_place = minetest.on_place or function(name, func)
+	local previous_on_place = minetest.registered_nodes[name].on_place
+	minetest.override_item(name, {
+		on_place = function(itemstack, placer, pointed_thing)
+			if func(itemstack, placer, pointed_thing) then
+				return previous_on_place(itemstack, placer, pointed_thing)
+			end
+		end
+	})
+end
+
+minetest.on_place("hydro:growlamp", function(itemstack, placer, pointed_thing)
+	if not pointed_thing then
+		return
+	end
+	local pos = minetest.get_pointed_thing_position(pointed_thing, true)
+	if not pos then
+		return
+	end
+	local nd_above = minetest.get_node({x=pos.x, y=pos.y+1, z=pos.z}).name
+	local nd_above_info = minetest.registered_nodes[nd_above]
+	if nd_above == "air"
+	or nd_above == "hydro:growlamp"
+	or not nd_above_info.walkable
+	or nd_above_info.buildable_to then
+		return
+	end
+	return true
+end)
 
 minetest.register_node("hydro:promix", {
 	description = "Promix",
