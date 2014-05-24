@@ -8,64 +8,46 @@ local PLANTS = {
 	roses = {name='roses',growtype='growtall',give_on_harvest='hydro:rosebush'}
 }
 
-local function PLANTLIKE(nodeid, nodename, type, option)
-	local params = {
-		description = nodename,
-		drawtype = "plantlike",
-		tile_images = {"hydro_"..nodeid..'.png'},
-		inventory_image = "hydro_"..nodeid..'.png',
-		wield_image = "hydro_"..nodeid..'.png',
-		paramtype = "light"
-	}
-		
-	if type == 'veg' then
-		params.groups = {snappy=2,dig_immediate=3,flammable=2}
-		params.sounds = default.node_sound_leaves_defaults()
-		if not option then
-			params.walkable = false
-		end
-	elseif type == 'met' then			-- metallic
-		params.groups = {cracky=3}
-		params.sounds = default.node_sound_stone_defaults()
-	elseif type == 'cri' then			-- craft items
-		params.groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3}
-		params.sounds = default.node_sound_wood_defaults()
-		if not option then
-			params.walkable = false
-		end
-	elseif type == 'eat' then			-- edible
-		params.groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3}
-		params.sounds = default.node_sound_wood_defaults()
-		params.walkable = false
-		params.on_use = minetest.item_eat(option)
-	end
-	minetest.register_node("hydro:"..nodeid, params)
-end
+minetest.register_node("hydro:wine", {
+	description = 'Wine Bottle',
+	drawtype = "plantlike",
+	tile_images = {"hydro_wine.png"},
+	inventory_image = "hydro_wine.png",
+	wield_image = "hydro_wine.png",
+	paramtype = "light",
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
+	sounds = default.node_sound_wood_defaults(),
+	walkable = false,
+	on_use = minetest.item_eat(1)
+})
 
-function GLOWLIKE(nodeid,nodename,drawtype)
-	local inv_image = "hydro_"..nodeid..".png" 
-	if not drawtype then 
-		drawtype = 'glasslike'
-		inv_image = minetest.inventorycube(inv_image)
-	end
-	minetest.register_node("hydro:"..nodeid, {
-		description = nodename,
-		drawtype = drawtype,
-		tile_images = {"hydro_"..nodeid..".png"},
-		inventory_image = inv_image,
-		light_propagates = true,
-		paramtype = "light",
-		sunlight_propagates = true,
-		light_source = 15	,
-		is_ground_content = true,
-		groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
-		sounds = default.node_sound_glass_defaults(),
-	})
-end
+minetest.register_node("hydro:coffeecup", {
+	description = 'Coffee Cup',
+	drawtype = "plantlike",
+	tile_images = {"hydro_coffeecup.png"},
+	inventory_image = "hydro_coffeecup.png",
+	wield_image = "hydro_coffeecup.png",
+	paramtype = "light",
+	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
+	sounds = default.node_sound_wood_defaults(),
+	walkable = false,
+	on_use = minetest.item_eat(2)
+})
 
-PLANTLIKE('wine','Wine Bottle','eat',1)
-PLANTLIKE('coffeecup','Coffee Cup','eat',2)
-GLOWLIKE('growlamp','Growlamp','plantlike')
+minetest.register_node("hydro:growlamp", {
+	description = "Growlamp",
+	drawtype = 'plantlike',
+	tile_images = {"hydro_growlamp.png"},
+	inventory_image = "hydro_growlamp.png",
+	light_propagates = true,
+	paramtype = "light",
+	sunlight_propagates = true,
+	light_source = 15	,
+	is_ground_content = true,
+	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
+	sounds = default.node_sound_glass_defaults(),
+})
+
 minetest.register_node("hydro:promix", {
 	description = "Promix",
 	tile_images = {"hydro_promix.png"},
@@ -106,7 +88,8 @@ end
 
 for _,plant in pairs(PLANTS) do 
 		--		define nodes
-	minetest.register_node("hydro:wild_"..plant.name, {
+	local wild_plant = "hydro:wild_"..plant.name
+	minetest.register_node(wild_plant, {
 		description = "Wild Plant",
 		drawtype = "plantlike",
 		visual_scale = 1.0,
@@ -266,7 +249,7 @@ for _,plant in pairs(PLANTS) do
 			sounds = default.node_sound_defaults(),
 		})
 	end
-	table.insert(get_wildplants, 'hydro:wild_'..plant.name)
+	table.insert(get_wildplants, wild_plant)
 	table.insert(get_plantbynumber, plant.name)
 	get_plantname["hydro:"..plant.name.."4"] = plant.name
 	get_plantname["hydro:"..plant.name.."3"] = plant.name
