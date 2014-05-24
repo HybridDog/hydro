@@ -1,11 +1,11 @@
 local HYDRO_GROW_INTERVAL = 100
 local PLANTS = {
-	tomato = {name='tomato',growtype='growtall'},
-	peas = {name='peas',growtype='growtall'},
-	habanero = {name='habanero',growtype='growtall'},
-	grapes = {name='grapes',growtype='permaculture'},
-	coffee = {name='coffee',growtype='permaculture'},
-	roses = {name='roses',growtype='growtall',give_on_harvest='hydro:rosebush'}
+	tomato = {name='tomato', description="Tomato", growtype='growtall'},
+	peas = {name='peas', description="Peas", growtype='growtall'},
+	habanero = {name='habanero', description="Habanero", growtype='growtall'},
+	grapes = {name='grapes', description="Grapes", growtype='permaculture'},
+	coffee = {name='coffee', description="Coffee", growtype='permaculture'},
+	roses = {name='roses', description="Roses", growtype='growtall',give_on_harvest='hydro:rosebush'}
 }
 
 minetest.register_node("hydro:wine", {
@@ -89,7 +89,7 @@ for _,plant in pairs(PLANTS) do
 		--		define nodes
 	local wild_plant = "hydro:wild_"..plant.name
 	minetest.register_node(wild_plant, {
-		description = "Wild Plant",
+		description = "Wild "..plant.description.." Plant",
 		drawtype = "plantlike",
 		visual_scale = 1.0,
 		tile_images = {"hydro_wildplant.png"},
@@ -104,7 +104,7 @@ for _,plant in pairs(PLANTS) do
 		},
 	})
 	minetest.register_node("hydro:seeds_"..plant.name, {
-		description = plant.name.." Seeds",
+		description = plant.description.." Seeds",
 		drawtype = "signlike",
 		tile_images = {"hydro_seeds.png"},
 		inventory_image = "hydro_seeds.png",
@@ -151,7 +151,7 @@ for _,plant in pairs(PLANTS) do
 		drop = '',
 	})
 	minetest.register_node('hydro:'..plant.name..'1', {
-		description = 'Tomato Plant (Young)',
+		description = plant.description..' Plant (Young)',
 		drawtype = 'plantlike',
 		visual_scale = 1.0,
 		tile_images = { 'hydro_'..plant.name..'1.png' },
@@ -166,7 +166,7 @@ for _,plant in pairs(PLANTS) do
 	})
 
 	minetest.register_node('hydro:'..plant.name..'2', {
-		description = 'Tomato Plant (Youngish)',
+		description = plant.description..' Plant (Youngish)',
 		drawtype = 'plantlike',
 		visual_scale = 1.0,
 		tile_images = { 'hydro_'..plant.name..'2.png' },
@@ -180,7 +180,7 @@ for _,plant in pairs(PLANTS) do
 		drop = '',
 	})
 	minetest.register_node('hydro:'..plant.name..'3', {
-		description = 'Tomato Plant (Fruitings)',
+		description = plant.description..' Plant (Fruitings)',
 		drawtype = 'plantlike',
 		visual_scale = 1.0,
 		tile_images = { 'hydro_'..plant.name..'3.png' },
@@ -210,7 +210,7 @@ for _,plant in pairs(PLANTS) do
 	end
 
 	minetest.register_node('hydro:'..plant.name..'4', {
-		description = 'Tomato Plant (Ripe)',
+		description = plant.description..' Plant (Ripe)',
 		drawtype = 'plantlike',
 		visual_scale = 1.0,
 		tile_images = { 'hydro_'..plant.name..'4.png' },
@@ -289,31 +289,31 @@ local function grow_plant(plantname, nodename, pos, tall)
 end
 
 --		WILD PLANTS/SEEDS GENERATING
+local function get_random(pos, seed)
+	return PseudoRandom(math.abs(pos.x+pos.y*3+pos.z*5)+seed)
+end
+
 minetest.register_abm({
-		nodenames = { "default:dirt_with_grass" },
-		interval = 600,
-		chance = 80,
-		action = function(p, node)
-			p.y = p.y+1
-			local is_air = minetest.get_node_or_nil(p)
-			if is_air
-			and is_air.name == 'air' then
-				local count = table.getn(get_plantbynumber)
-				local random_plant = math.random(1, count)
-				local nodename = "hydro:wild_"..get_plantbynumber[random_plant]
-				if nodename ~= "hydro:wild_rubberplant" then
-					minetest.add_node(p, {name=nodename})
-				end
+	nodenames = { "default:dirt_with_grass" },
+	interval = 600,
+	chance = 80,
+	action = function(p, node)
+		local pr = get_random(p, 17)
+		if pr:next(1,20) ~= 1 then
+			return
+		end
+		p.y = p.y+1
+		local is_air = minetest.get_node_or_nil(p)
+		if is_air
+		and is_air.name == 'air' then
+			local count = table.getn(get_plantbynumber)
+			local random_plant = math.random(1, count)
+			local nodename = "hydro:wild_"..get_plantbynumber[random_plant]
+			if nodename ~= "hydro:wild_rubberplant" then
+				minetest.add_node(p, {name=nodename})
 			end
 		end
-})
-minetest.register_abm({
-		nodenames = get_wildplants,
-		interval = 600,
-		chance = 2,
-		action = function(pos)
-			minetest.remove_node({x=pos.x,y=pos.y,z=pos.z})
-		end
+	end
 })
 
 
@@ -349,29 +349,46 @@ minetest.register_abm({
 	end
 })
 
-minetest.register_craft({	output = 'hydro:growlamp 1',	recipe = {
-		{'glass', 'torch','glass'},
-		{'glass', 'torch','glass'},
-		{'glass', 'torch','glass'},
-}})
-minetest.register_craft({	output = 'hydro:promix 6',	recipe = {
+
+--Crafting
+minetest.register_craft({
+	output = 'hydro:growlamp',
+	recipe = {
+		{'default:glass', 'default:torch','default:glass'},
+		{'default:glass', 'default:torch','default:glass'},
+		{'default:glass', 'default:torch','default:glass'},
+	}
+})
+
+minetest.register_craft({
+	output = 'hydro:promix 6',
+	recipe = {
 		{'', 'default:clay_lump',''},
 		{'default:dirt', 'default:dirt', 'default:dirt'},
 		{'default:dirt', 'default:dirt', 'default:dirt'},
-}})
+	}
+})
+
 minetest.register_craft({
-	output = 'hydro:wine 1',	recipe = {
+	output = 'hydro:wine',
+	recipe = {
 		{'default:glass', 'hydro:grapes','default:glass'},
 		{'default:glass', 'hydro:grapes','default:glass'},
 		{'default:glass', 'hydro:grapes','default:glass'},
 	}
 })
+
 minetest.register_craft({
-	output = 'node "hydro:coffeecup" 1',	recipe = {
+	output = "hydro:coffeecup",
+	recipe = {
 		{'','',''},
 		{'default:clay_lump','hydro:roastedcoffee','default:clay_lump'},
 		{'','default:clay_lump',''},
 	}
 })
-minetest.register_craft({	type = "cooking",	output = "hydro:roastedcoffee",	recipe = "hydro:coffee", })
 
+minetest.register_craft({
+	type = "cooking",
+	output = "hydro:roastedcoffee",
+	recipe = "hydro:coffee",
+})
