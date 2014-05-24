@@ -253,7 +253,7 @@ for _,plant in pairs(PLANTS) do
 end
 
 --		GROW (TALL) FUNCTION
-local function grow(plantname, nodename, pos, tall)
+local function grow_plant(plantname, nodename, pos, tall)
 	local name, above
 	if nodename == 'hydro:'..plantname..'3' 			then
 		name = plantname.."4"
@@ -270,11 +270,13 @@ local function grow(plantname, nodename, pos, tall)
 		name = "sproutlings_"..plantname
 	elseif nodename == 'hydro:seeds_'..plantname 		then
 		name = "seedlings_"..plantname
+	else
+		return
 	end
 	minetest.add_node(pos, {name="hydro:"..name})
 	if above
 	and tall then
-		minetest.add_node({x=pox.x, y=pos.y+1, z=pos.z}, {name="hydro:"..name})
+		minetest.add_node({x=pos.x, y=pos.y+1, z=pos.z}, {name="hydro:"..name})
 	end
 end
 
@@ -284,7 +286,7 @@ minetest.register_abm({
 		interval = 600,
 		chance = 80,
 		action = function(p, node)
-			local p.y = p.y+1
+			p.y = p.y+1
 			local is_air = minetest.get_node_or_nil(p)
 			if is_air
 			and is_air.name == 'air' then
@@ -313,6 +315,10 @@ minetest.register_abm({
 	interval = HYDRO_GROW_INTERVAL,
 	chance = 1,
 	action = function(pos, node)
+		if minetest.get_node({x=pos.x, y=pos.y+1, z=pos.z}).name == "air"
+		or minetest.get_node({x=pos.x, y=pos.y-1, z=pos.z}).name ~= "air" then
+			return
+		end
 		for i = -1,1 do
 			for j = -1,1 do
 				local p = {x=pos.x+j, y=pos.y, z=pos.z+i}
@@ -327,7 +333,7 @@ minetest.register_abm({
 						if growtype == 'growtall' then
 							tall = true
 						end
-						grow(curplant, grow, {x=p.x, y=p.y-3, z=p.z}, tall)
+						grow_plant(curplant, grow, {x=p.x, y=p.y-3, z=p.z}, tall)
 					end
 				end
 			end
