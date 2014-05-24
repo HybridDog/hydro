@@ -1,5 +1,5 @@
-HYDRO_GROW_INTERVAL = 100
-PLANTS = {
+local HYDRO_GROW_INTERVAL = 100
+local PLANTS = {
 	tomato = {name='tomato',growtype='growtall'},
 	peas = {name='peas',growtype='growtall'},
 	habanero = {name='habanero',growtype='growtall'},
@@ -8,11 +8,15 @@ PLANTS = {
 	roses = {name='roses',growtype='growtall',give_on_harvest='hydro:rosebush'}
 }
 
-PLANTLIKE = function(nodeid, nodename,type,option)
-	if option == nil then option = false end
-
-	local params ={ description = nodename, drawtype = "plantlike", tile_images = {"hydro_"..nodeid..'.png'}, 
-	inventory_image = "hydro_"..nodeid..'.png',	wield_image = "hydro_"..nodeid..'.png', paramtype = "light",	}
+local function PLANTLIKE(nodeid, nodename, type, option)
+	local params = {
+		description = nodename,
+		drawtype = "plantlike",
+		tile_images = {"hydro_"..nodeid..'.png'},
+		inventory_image = "hydro_"..nodeid..'.png',
+		wield_image = "hydro_"..nodeid..'.png',
+		paramtype = "light"
+	}
 		
 	if type == 'veg' then
 		params.groups = {snappy=2,dig_immediate=3,flammable=2}
@@ -26,7 +30,9 @@ PLANTLIKE = function(nodeid, nodename,type,option)
 	elseif type == 'cri' then			-- craft items
 		params.groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3}
 		params.sounds = default.node_sound_wood_defaults()
-		if option == false then params.walkable = false end
+		if not option then
+			params.walkable = false
+		end
 	elseif type == 'eat' then			-- edible
 		params.groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3}
 		params.sounds = default.node_sound_wood_defaults()
@@ -35,12 +41,12 @@ PLANTLIKE = function(nodeid, nodename,type,option)
 	end
 	minetest.register_node("hydro:"..nodeid, params)
 end
-GLOWLIKE = function(nodeid,nodename,drawtype)
-	if drawtype == nil then 
+
+function GLOWLIKE(nodeid,nodename,drawtype)
+	local inv_image = "hydro_"..nodeid..".png" 
+	if not drawtype then 
 		drawtype = 'glasslike'
-		inv_image = minetest.inventorycube("hydro_"..nodeid..".png")
-	else 
-		inv_image = "hydro_"..nodeid..".png" 
+		inv_image = minetest.inventorycube(inv_image)
 	end
 	minetest.register_node("hydro:"..nodeid, {
 		description = nodename,
@@ -85,17 +91,20 @@ minetest.register_node("hydro:rosebush", {
 	sounds = default.node_sound_leaves_defaults(),
 })
 
-get_plantname = {}		-- plants index by nodenames (tomato1, tomato2, seeds_tomato, etc..)
-get_plantbynumber = {}		-- plants index by number (for random select)
-get_wildplants = {}		-- wildplant nodenames (pop control)
+local get_plantname = {}		-- plants index by nodenames (tomato1, tomato2, seeds_tomato, etc..)
+local get_plantbynumber = {}		-- plants index by number (for random select)
+local get_wildplants = {}		-- wildplant nodenames (pop control)
 
-local is_specialharvest = function(plantname)
+local function is_specialharvest(plantname)
 	local result = 'hydro:'..plantname
-	if PLANTS[plantname].give_on_harvest ~= nil then result =  PLANTS[plantname].give_on_harvest end
+	local tmp = PLANTS[plantname].give_on_harvest
+	if tmp then
+		result = tmp
+	end
 	return result
 end
 
-for index,plant in pairs(PLANTS) do 
+for _,plant in pairs(PLANTS) do 
 		--		define nodes
 	minetest.register_node("hydro:wild_"..plant.name, {
 		description = "Wild Plant",
@@ -242,7 +251,7 @@ for index,plant in pairs(PLANTS) do
 		},
 
 	})
-	if plant.give_on_harvest == nil then
+	if not plant.give_on_harvest then
 		minetest.register_node("hydro:"..plant.name, {
 			description = plant.name,
 			drawtype = "plantlike",
@@ -269,44 +278,29 @@ for index,plant in pairs(PLANTS) do
 end
 
 --		GROW (TALL) FUNCTION
-growtall = function (plantname, nodename, grnode)
+local function grow(plantname, nodename, pos, tall)
+	local name, above
 	if nodename == 'hydro:'..plantname..'3' 			then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."4"})	
-		minetest.add_node(grnode.grow2,{name="hydro:"..plantname.."4"})
+		name = plantname.."4"
+		above = true
 	elseif nodename == 'hydro:'..plantname..'2' 		then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."3"})
-		minetest.add_node(grnode.grow2,{name="hydro:"..plantname.."3"})
+		name = plantname.."3"
+		above = true
 	elseif nodename == 'hydro:'..plantname..'1' 		then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."2"})
-		minetest.add_node(grnode.grow2,{name="hydro:"..plantname.."2"})
+		name = plantname.."2"
+		above = true
 	elseif nodename =='hydro:sproutlings_'..plantname 	then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."1"})
+		name = plantname.."1"
 	elseif nodename == 'hydro:seedlings_'..plantname 	then
-		minetest.add_node(grnode.grow1,{name="hydro:sproutlings_"..plantname})
+		name = "sproutlings_"..plantname
 	elseif nodename == 'hydro:seeds_'..plantname 		then
-		minetest.add_node(grnode.grow1,{name="hydro:seedlings_"..plantname})
+		name = "seedlings_"..plantname
 	end
-
-end
-
-growshort = function (plantname, nodename, grnode)
-	if nodename == 'hydro:'..plantname..'3' 			then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."4"})	
---		minetest.add_node(grnode.grow2,{name="hydro:"..plantname.."4"})
-	elseif nodename == 'hydro:'..plantname..'2' 		then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."3"})
---		minetest.add_node(grnode.grow2,{name="hydro:"..plantname.."3"})
-	elseif nodename == 'hydro:'..plantname..'1' 		then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."2"})
---		minetest.add_node(grnode.grow2,{name="hydro:"..plantname.."2"})
-	elseif nodename =='hydro:sproutlings_'..plantname 	then
-		minetest.add_node(grnode.grow1,{name="hydro:"..plantname.."1"})
-	elseif nodename == 'hydro:seedlings_'..plantname 	then
-		minetest.add_node(grnode.grow1,{name="hydro:sproutlings_"..plantname})
-	elseif nodename == 'hydro:seeds_'..plantname 		then
-		minetest.add_node(grnode.grow1,{name="hydro:seedlings_"..plantname})
+	minetest.add_node(pos, {name="hydro:"..name})
+	if above
+	and tall then
+		minetest.add_node({x=pox.x, y=pos.y+1, z=pos.z}, {name="hydro:"..name})
 	end
-
 end
 
 --		WILD PLANTS/SEEDS GENERATING
@@ -314,16 +308,16 @@ minetest.register_abm({
 		nodenames = { "default:dirt_with_grass" },
 		interval = 600,
 		chance = 80,
-		action = function(pos, node)
-			local air = { x=pos.x, y=pos.y+1,z=pos.z }
-			local is_air = minetest.get_node_or_nil(air)
-			if is_air ~= nil
+		action = function(p, node)
+			local p.y = p.y+1
+			local is_air = minetest.get_node_or_nil(p)
+			if is_air
 			and is_air.name == 'air' then
 				local count = table.getn(get_plantbynumber)
-				local random_plant = math.random(1,count)
+				local random_plant = math.random(1, count)
 				local nodename = "hydro:wild_"..get_plantbynumber[random_plant]
 				if nodename ~= "hydro:wild_rubberplant" then
-					minetest.add_node({x=pos.x,y=pos.y+1,z=pos.z},{name=nodename})
+					minetest.add_node(p, {name=nodename})
 				end
 			end
 		end
@@ -332,7 +326,7 @@ minetest.register_abm({
 		nodenames = get_wildplants,
 		interval = 600,
 		chance = 2,
-		action = function(pos, node, active_object_count, active_object_count_wider)
+		action = function(pos)
 			minetest.remove_node({x=pos.x,y=pos.y,z=pos.z})
 		end
 })
@@ -344,48 +338,25 @@ minetest.register_abm({
 	interval = HYDRO_GROW_INTERVAL,
 	chance = 1,
 	action = function(pos, node)
-		local ps = {}
-		local n = 1
 		for i = -1,1 do
 			for j = -1,1 do
-				local tmp = {x=pos.x+i,y=pos.y-5,z=pos.z+j}
-				ps[n] = {}
-				ps[n].water = tmp
-				tmp.y = tmp.y+1
-				ps[n].mix = tmp
-				tmp.y = tmp.y+1
-				ps[n].grow1 = tmp
-				tmp.y = tmp.y+1
-				ps[n].grow2 = tmp
-				tmp.y = tmp.y+1
-				n = n+1
-			end
-		end
-
-		for i = 1,9 do
-			local water_found = false
-			local water = minetest.get_node(ps[i].water).name
-			if water == 'default:water_source'
-			or water == 'default:water_flowing' then
-				water_found = true
-			end
-			local ismix = minetest.get_node(ps[i].mix)
-
-			if water_found
-			and ismix.name == 'hydro:promix' then
-				local grow = minetest.get_node(ps[i].grow1).name
-				local curplant = get_plantname[grow]
-				if curplant ~= nil then
-					local growtype = PLANTS[curplant].growtype
-					if growtype == 'growtall' then
-						growtall(curplant,grow,ps[i])	--
-					elseif growtype == 'growshort' then
-						growshort(curplant,grow,ps[i])	--
+				local p = {x=pos.x+j, y=pos.y, z=pos.z+i}
+				local water = minetest.get_node({x=p.x, y=p.y-5, z=p.z}).name
+				if (water == 'default:water_source' or water == 'default:water_flowing')
+				and minetest.get_node({x=p.x, y=p.y-4, z=p.z}).name == 'hydro:promix' then
+					local grow = minetest.get_node({x=p.x, y=p.y-3, z=p.z}).name
+					local curplant = get_plantname[grow]
+					if curplant then
+						local growtype = PLANTS[curplant].growtype
+						local tall
+						if growtype == 'growtall' then
+							tall = true
+						end
+						grow(curplant, grow, {x=p.x, y=p.y-3, z=p.z}, tall)
 					end
 				end
 			end
 		end
-
 	end
 })
 
