@@ -14,6 +14,7 @@ minetest.register_node("hydro:wine", {
 	tile_images = {"hydro_wine.png"},
 	inventory_image = "hydro_wine.png",
 	wield_image = "hydro_wine.png",
+	use_texture_alpha = true,
 	paramtype = "light",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
 	sounds = default.node_sound_wood_defaults(),
@@ -27,6 +28,7 @@ minetest.register_node("hydro:coffeecup", {
 	tile_images = {"hydro_coffeecup.png"},
 	inventory_image = "hydro_coffeecup.png",
 	wield_image = "hydro_coffeecup.png",
+	use_texture_alpha = true,
 	paramtype = "light",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
 	sounds = default.node_sound_wood_defaults(),
@@ -36,14 +38,22 @@ minetest.register_node("hydro:coffeecup", {
 
 minetest.register_node("hydro:growlamp", {
 	description = "Growlamp",
-	drawtype = 'plantlike',
-	tile_images = {"hydro_growlamp.png"},
-	inventory_image = "hydro_growlamp.png",
-	light_propagates = true,
+	drawtype = 'nodebox',
+	node_box = {
+		type = "fixed",
+		fixed = {
+			{-1/16,	-7/16,	-1/16,	1/16,	8/16,	1/16},
+			{-2/16,	3/16,	-2/16,	2/16,	6/16,	2/16},
+			{-3/16,	-6/16,	-2/16,	3/16,	3/16,	2/16},
+			{-2/16,	-6/16,	-3/16,	2/16,	3/16,	3/16},
+		}
+	},
+	tile_images = {"hydro_growlamp_top.png", "hydro_growlamp_bottom.png", "hydro_growlamp_side.png"},
+	--inventory_image = "hydro_growlamp_side.png",
 	paramtype = "light",
+	light_propagates = true,
 	sunlight_propagates = true,
-	light_source = 15	,
-	is_ground_content = true,
+	light_source = 15,
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
 	sounds = default.node_sound_glass_defaults(),
 })
@@ -51,7 +61,6 @@ minetest.register_node("hydro:growlamp", {
 minetest.register_node("hydro:promix", {
 	description = "Promix",
 	tile_images = {"hydro_promix.png"},
-	is_ground_content = true,
 	groups = {crumbly=3},
 	sounds = default.node_sound_dirt_defaults(),
 })
@@ -59,7 +68,6 @@ minetest.register_node("hydro:roastedcoffee", {
 	description = "Roasted Coffee",
 	tile_images = {"hydro_roastedcoffee.png"},
 	inventory_image = minetest.inventorycube("hydro_roastedcoffee.png"),
-	is_ground_content = true,
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
 	sounds = default.node_sound_stone_defaults(),
 })
