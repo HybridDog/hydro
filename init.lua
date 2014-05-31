@@ -330,7 +330,7 @@ minetest.register_abm({
 	chance = 80,
 	action = function(p, node)
 		local pr = get_random(p, 17)
-		if pr:next(1,20) ~= 1 then
+		if pr:next(1,200) ~= 1 then
 			return
 		end
 		p.y = p.y+1
