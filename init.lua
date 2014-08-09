@@ -122,7 +122,7 @@ for _,plant in pairs(PLANTS) do
 	minetest.register_node(wild_plant, {
 		description = "Wild "..plant.description.." Plant",
 		drawtype = "plantlike",
-		visual_scale = 1.0,
+		waving = 1,
 		tile_images = {"hydro_wildplant.png"},
 		paramtype = "light",
 		walkable = false,
