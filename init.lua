@@ -125,8 +125,9 @@ for _,plant in pairs(PLANTS) do
 		waving = 1,
 		tile_images = {"hydro_wildplant.png"},
 		paramtype = "light",
+		buildable_to = true,
 		walkable = false,
-		groups = {snappy=3,flammable=3},
+		groups = {snappy=3,flammable=3,flora=1,attached_node=1},
 		sounds = default.node_sound_leaves_defaults(),
 		drop = 'hydro:seeds_'..plant.name..' 4',
 		selection_box = {
