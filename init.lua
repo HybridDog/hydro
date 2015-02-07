@@ -135,7 +135,9 @@ for _,plant in pairs(PLANTS) do
 			fixed = {-1/3, -1/2, -1/3, 1/3, 1/6, 1/3},
 		},
 	})
-	minetest.register_node("hydro:seeds_"..plant.name, {
+
+	local seedname = "hydro:seeds_"..plant.name
+	minetest.register_node(seedname, {
 		description = plant.description.." Seeds",
 		drawtype = "signlike",
 		tile_images = {"hydro_seeds.png"},
@@ -156,6 +158,21 @@ for _,plant in pairs(PLANTS) do
 		legacy_wallmounted = true,
 		sounds = default.node_sound_wood_defaults(),
 	})
+
+	minetest.on_place(seedname, function(itemstack, placer, pointed_thing)
+		if not pointed_thing then
+			return
+		end
+		local pos = pointed_thing.under
+		local above = pointed_thing.above
+		if pos
+		and above
+		and above.y == pos.y+1
+		and minetest.get_node(pos).name == "hydro:promix" then
+			return true
+		end
+	end)
+
 	minetest.register_node('hydro:seedlings_'..plant.name, {
 		drawtype = 'plantlike',
 		visual_scale = 1.0,
