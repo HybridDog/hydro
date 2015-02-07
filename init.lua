@@ -8,33 +8,46 @@ local PLANTS = {
 	roses = {name="roses", description="Roses", growtype="growtall",give_on_harvest="hydro:rosebush"}
 }
 
-minetest.register_node("hydro:wine", {
+-- plantdef
+local function pd(def)
+	local plant = {
+		drawtype = "plantlike",
+		paramtype = "light",
+		walkable = false,
+		waving = 1,
+		groups = {snappy=3},
+		sounds = default.node_sound_leaves_defaults(),
+	}
+	for n,i in pairs(def) do
+		plant[n] = i
+	end
+	return plant
+end
+
+
+minetest.register_node("hydro:wine", pd({
 	description = "Wine Bottle",
-	drawtype = "plantlike",
 	tile_images = {"hydro_wine.png"},
 	inventory_image = "hydro_wine.png",
 	wield_image = "hydro_wine.png",
+	waving = 0,
 	use_texture_alpha = true,
-	paramtype = "light",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
 	sounds = default.node_sound_wood_defaults(),
-	walkable = false,
 	on_use = minetest.item_eat(1)
-})
+}))
 
-minetest.register_node("hydro:coffeecup", {
+minetest.register_node("hydro:coffeecup", pd({
 	description = "Coffee Cup",
-	drawtype = "plantlike",
 	tile_images = {"hydro_coffeecup.png"},
 	inventory_image = "hydro_coffeecup.png",
 	wield_image = "hydro_coffeecup.png",
+	waving = 0,
 	use_texture_alpha = true,
-	paramtype = "light",
 	groups = {snappy=2,choppy=2,oddly_breakable_by_hand=2,flammable=3},
 	sounds = default.node_sound_wood_defaults(),
-	walkable = false,
 	on_use = minetest.item_eat(2)
-})
+}))
 
 minetest.register_node("hydro:growlamp", {
 	description = "Growlamp",
@@ -120,22 +133,17 @@ for _,plant in pairs(PLANTS) do
 		--		define nodes
 	local seedname = "hydro:seeds_"..plant.name
 	local wild_plant = "hydro:wild_"..plant.name
-	minetest.register_node(wild_plant, {
+	minetest.register_node(wild_plant, pd({
 		description = "Wild "..plant.description.." Plant",
-		drawtype = "plantlike",
-		waving = 1,
 		tile_images = {"hydro_wildplant.png"},
-		paramtype = "light",
 		buildable_to = true,
-		walkable = false,
 		groups = {snappy=3,flammable=3,flora=1,attached_node=1},
-		sounds = default.node_sound_leaves_defaults(),
 		drop = seedname.." 4",
 		selection_box = {
 			type = "fixed",
 			fixed = {-1/3, -1/2, -1/3, 1/3, 1/6, 1/3},
 		},
-	})
+	}))
 
 	minetest.register_node(seedname, {
 		description = plant.description.." Seeds",
@@ -173,76 +181,22 @@ for _,plant in pairs(PLANTS) do
 		end
 	end)
 
-	minetest.register_node("hydro:seedlings_"..plant.name, {
-		drawtype = "plantlike",
-		visual_scale = 1.0,
-		tile_images = { "hydro_seedlings.png" },
-		inventory_image = "hydro_seedlings.png",
-		sunlight_propagates = true,
-		paramtype = "light",
-		walkable = false,
-		furnace_burntime = 1,
-		groups = { snappy = 3 },
-		sounds = default.node_sound_leaves_defaults(),
-		drop = "",
-	})
-	minetest.register_node("hydro:sproutlings_" .. plant.name, {
-		drawtype = "plantlike",
-		visual_scale = 1.0,
-		tile_images = { "hydro_sproutlings.png" },
-		inventory_image = "hydro_sproutlings.png",
-		sunlight_propagates = true,
-		paramtype = "light",
-		walkable = false,
-		furnace_burntime = 1,
-		groups = { snappy = 3 },
-		sounds = default.node_sound_leaves_defaults(),
-		drop = "",
-	})
-	minetest.register_node("hydro:"..plant.name.."1", {
-		description = plant.description.." Plant (Young)",
-		drawtype = "plantlike",
-		visual_scale = 1.0,
-		tile_images = { "hydro_"..plant.name.."1.png" },
-		inventory_image = "hydro_"..plant.name.."1.png",
-		sunlight_propagates = true,
-		paramtype = "light",
-		walkable = false,
-		furnace_burntime = 1,
-		groups = { snappy = 3 },
-		sounds = default.node_sound_leaves_defaults(),
-		drop = "",
-	})
-
-	minetest.register_node("hydro:"..plant.name.."2", {
-		description = plant.description.." Plant (Youngish)",
-		drawtype = "plantlike",
-		visual_scale = 1.0,
-		tile_images = { "hydro_"..plant.name.."2.png" },
-		inventory_image = "hydro_"..plant.name.."2.png",
-		sunlight_propagates = true,
-		paramtype = "light",
-		walkable = false,
-		furnace_burntime = 1,
-		groups = { snappy = 3 },
-		sounds = default.node_sound_leaves_defaults(),
-		drop = "",
-	})
-	minetest.register_node("hydro:"..plant.name.."3", {
-		description = plant.description.." Plant (Fruitings)",
-		drawtype = "plantlike",
-		visual_scale = 1.0,
-		tile_images = { "hydro_"..plant.name.."3.png" },
-		inventory_image = "hydro_"..plant.name.."3.png",
-		sunlight_propagates = true,
-		paramtype = "light",
-		walkable = false,
-		furnace_burntime = 1,
-		groups = { snappy = 3 },
-		sounds = default.node_sound_leaves_defaults(),
-		drop = "",
-	})
-	
+	for _,i in pairs({
+		{"hydro:seedlings_"..plant.name, "hydro_seedlings.png"},
+		{"hydro:sproutlings_" .. plant.name, "hydro_sproutlings.png"},
+		{"hydro:"..plant.name.."1", "hydro_"..plant.name.."1.png", plant.description.." Plant (Young)"},
+		{"hydro:"..plant.name.."2", "hydro_"..plant.name.."2.png", plant.description.." Plant (Youngish)"},
+		{"hydro:"..plant.name.."3", "hydro_"..plant.name.."3.png", plant.description.." Plant (Fruitings)"},
+	}) do
+		minetest.register_node(i[1], pd({
+			description = i[3],
+			tiles = {i[2]},
+			inventory_image = i[2],
+			sunlight_propagates = true,
+			furnace_burntime = 1,
+			drop = "",
+		}))
+	end	
 
 	local harvest = "hydro:"..plant.name
 	if plant.give_on_harvest then
@@ -258,18 +212,12 @@ for _,plant in pairs(PLANTS) do
 
 	end
 
-	minetest.register_node("hydro:"..plant.name.."4", {
+	minetest.register_node("hydro:"..plant.name.."4", pd({
 		description = plant.description.." Plant (Ripe)",
-		drawtype = "plantlike",
-		visual_scale = 1.0,
 		tile_images = { "hydro_"..plant.name.."4.png" },
 		inventory_image = "hydro_"..plant.name.."4.png",
 		sunlight_propagates = true,
-		paramtype = "light",
-		walkable = false,
 		furnace_burntime = 1,
-		groups = { snappy = 3 },
-		sounds = default.node_sound_leaves_defaults(),
 		after_dig_node = after_dig_node,
 		drop = { 
 				items = {
@@ -282,21 +230,17 @@ for _,plant in pairs(PLANTS) do
 				}
 		},
 
-	})
+	}))
 	if not plant.give_on_harvest then
-		minetest.register_node("hydro:"..plant.name, {
+		minetest.register_node("hydro:"..plant.name, pd({
 			description = plant.name,
-			drawtype = "plantlike",
-			visual_scale = 1.0,
 			tile_images = {"hydro_"..plant.name..".png"},
 			inventory_image = "hydro_"..plant.name..".png",
-			paramtype = "light",
 			sunlight_propagates = true,
-			walkable = false,
 			groups = {fleshy=3,dig_immediate=3,flammable=2},
 			on_use = minetest.item_eat(4),
 			sounds = default.node_sound_defaults(),
-		})
+		}))
 	end
 	table.insert(get_wildplants, wild_plant)
 	table.insert(get_plantbynumber, plant.name)
