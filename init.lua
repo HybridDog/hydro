@@ -75,15 +75,15 @@ minetest.register_node("hydro:growlamp", {
 minetest.on_place = minetest.on_place or function(name, func)
 	local previous_on_place = minetest.registered_nodes[name].on_place
 	minetest.override_item(name, {
-		on_place = function(itemstack, placer, pointed_thing)
-			if func(itemstack, placer, pointed_thing) then
-				return previous_on_place(itemstack, placer, pointed_thing)
+		on_place = function(...)
+			if func(...) then
+				return previous_on_place(...)
 			end
 		end
 	})
 end
 
-minetest.on_place("hydro:growlamp", function(itemstack, placer, pointed_thing)
+minetest.on_place("hydro:growlamp", function(_, _, pointed_thing)
 	if not pointed_thing then
 		return
 	end
