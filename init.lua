@@ -27,7 +27,7 @@ end
 
 minetest.register_node("hydro:wine", pd({
 	description = "Wine Bottle",
-	tile_images = {"hydro_wine.png"},
+	tiles = {"hydro_wine.png"},
 	inventory_image = "hydro_wine.png",
 	wield_image = "hydro_wine.png",
 	waving = 0,
@@ -39,7 +39,7 @@ minetest.register_node("hydro:wine", pd({
 
 minetest.register_node("hydro:coffeecup", pd({
 	description = "Coffee Cup",
-	tile_images = {"hydro_coffeecup.png"},
+	tiles = {"hydro_coffeecup.png"},
 	inventory_image = "hydro_coffeecup.png",
 	wield_image = "hydro_coffeecup.png",
 	waving = 0,
@@ -61,7 +61,7 @@ minetest.register_node("hydro:growlamp", {
 			{-2/16,	-6/16,	-3/16,	2/16,	3/16,	3/16},
 		}
 	},
-	tile_images = {"hydro_growlamp_top.png", "hydro_growlamp_bottom.png", "hydro_growlamp_side.png"},
+	tiles = {"hydro_growlamp_top.png", "hydro_growlamp_bottom.png", "hydro_growlamp_side.png"},
 	--inventory_image = "hydro_growlamp_side.png",
 	paramtype = "light",
 	light_propagates = true,
@@ -104,13 +104,13 @@ end)
 
 minetest.register_node("hydro:promix", {
 	description = "Promix",
-	tile_images = {"hydro_promix.png"},
+	tiles = {"hydro_promix.png"},
 	groups = {crumbly=3},
 	sounds = default.node_sound_dirt_defaults(),
 })
 minetest.register_node("hydro:roastedcoffee", {
 	description = "Roasted Coffee",
-	tile_images = {"hydro_roastedcoffee.png"},
+	tiles = {"hydro_roastedcoffee.png"},
 	inventory_image = minetest.inventorycube("hydro_roastedcoffee.png"),
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
 	sounds = default.node_sound_stone_defaults(),
@@ -119,7 +119,7 @@ minetest.register_node("hydro:rosebush", {
 	description = "Rose Bush",
 	drawtype = "allfaces_optional",
 	visual_scale = 1.3,
-	tile_images = {"hydro_rosebush.png"},
+	tiles = {"hydro_rosebush.png"},
 	paramtype = "light",
 	groups = {snappy=3,  flammable=2},
 	sounds = default.node_sound_leaves_defaults(),
@@ -135,7 +135,7 @@ for _,plant in pairs(PLANTS) do
 	local wild_plant = "hydro:wild_"..plant.name
 	minetest.register_node(wild_plant, pd({
 		description = "Wild "..plant.description.." Plant",
-		tile_images = {"hydro_wildplant.png"},
+		tiles = {"hydro_wildplant.png"},
 		buildable_to = true,
 		groups = {snappy=3,flammable=3,flora=1,attached_node=1},
 		drop = seedname.." 4",
@@ -148,7 +148,7 @@ for _,plant in pairs(PLANTS) do
 	minetest.register_node(seedname, {
 		description = plant.description.." Seeds",
 		drawtype = "signlike",
-		tile_images = {"hydro_seeds.png"},
+		tiles = {"hydro_seeds.png"},
 		inventory_image = "hydro_seeds.png",
 		wield_image = "hydro_seeds.png",
 		paramtype = "light",
@@ -214,7 +214,7 @@ for _,plant in pairs(PLANTS) do
 
 	minetest.register_node("hydro:"..plant.name.."4", pd({
 		description = plant.description.." Plant (Ripe)",
-		tile_images = { "hydro_"..plant.name.."4.png" },
+		tiles = { "hydro_"..plant.name.."4.png" },
 		inventory_image = "hydro_"..plant.name.."4.png",
 		sunlight_propagates = true,
 		furnace_burntime = 1,
@@ -234,7 +234,7 @@ for _,plant in pairs(PLANTS) do
 	if not plant.give_on_harvest then
 		minetest.register_node("hydro:"..plant.name, pd({
 			description = plant.name,
-			tile_images = {"hydro_"..plant.name..".png"},
+			tiles = {"hydro_"..plant.name..".png"},
 			inventory_image = "hydro_"..plant.name..".png",
 			sunlight_propagates = true,
 			groups = {fleshy=3,dig_immediate=3,flammable=2},
