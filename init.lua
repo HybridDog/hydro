@@ -64,7 +64,6 @@ minetest.register_node("hydro:growlamp", {
 	tiles = {"hydro_growlamp_top.png", "hydro_growlamp_bottom.png", "hydro_growlamp_side.png"},
 	--inventory_image = "hydro_growlamp_side.png",
 	paramtype = "light",
-	light_propagates = true,
 	sunlight_propagates = true,
 	light_source = 15,
 	groups = {snappy=2,cracky=3,oddly_breakable_by_hand=3},
