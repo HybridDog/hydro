@@ -289,6 +289,7 @@ minetest.register_abm({
 	nodenames = { "default:dirt_with_grass" },
 	interval = 600,
 	chance = 80,
+	catch_up = false,
 	action = function(p, node)
 		local pr = get_random(p, 17)
 		if pr:next(1,200) ~= 1 then
